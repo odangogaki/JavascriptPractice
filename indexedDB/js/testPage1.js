@@ -1,4 +1,43 @@
 $(document).ready(function(){
+  //次へボタン押下時
+  $('#next_page').on({
+    'click' : function(){
+      openDB(DBName, 1, storeName, function(){
+        console.log(getFileName());
+        if(getFileName() == 'testPage1.html'){
+          for(var question_i = 1; question_i < 7; question_i++){
+            var key = getFileName() + $('#question' + question_i).attr('id');
+            var value = $('#question' + question_i + ' .answerField').html();
+            var dictionary = {id: key, value: value};
+            putData(storeName, dictionary, function(){
+              if(question_i >= 6){
+                location.href = './testPage2.html';
+              }
+            });
+          }
+        }else{
+        // ループ処理について考えないとif(question_i >= 6)がめっちゃはしる
+          for(var question_i = 1; question_i < 7; question_i++){
+            var key = getFileName() + $('#question' + (question_i + 6)).attr('id');
+            var value = $('#question' + (question_i + 6) + ' .answerField').html();
+            var dictionary = {id: key, value: value};
+            putData(storeName, dictionary, function(){
+              if(question_i >= 6){
+                getAllData(storeName, function(dataArray){
+                  console.log(dataArray);
+                });
+              }
+            });
+          }
+        }
+      });
+    }
+  })
+
+
+
+
+
   // 登録を押下した回数をカウント
   var registerCount = 0;
   var outputText = '';
