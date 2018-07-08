@@ -1,7 +1,7 @@
 var db;
 
 // DBを開くメソッド（DBの新規作成、upgradeも含む）
-function openDB(DBName, DBVersion, DBStoreName){
+function openDB(DBName, DBVersion, DBStoreName, callback){
   // requestにはIDBOpenDBRequestオブジェクトのインスタンスが格納される
   // IDBOpenDBRequestオブジェクトは結果（成功）またはイベントとして扱うエラー値を伴うオブジェクト
   //open()関数の第一引数はDB名、第二引数はバージョン(long型)
@@ -25,12 +25,14 @@ function openDB(DBName, DBVersion, DBStoreName){
     // event.target==request, request.result==IDBDatabaseのインスタンス
     db = this.result;
     console.log("DBOPEN!");
+    callback();
   };
   //requestが失敗したとき
   request.onerror = function(event){
     //error時の処理、request.errorCodeに対して行うこと
     // errorEventがrequestをtargetとして発生する
     console.error("openDB: ", event.target.errorCode);
+    callback();
   };
 }
 
@@ -39,7 +41,7 @@ function getObjectStore(storeName, mode){
   return transaction.objectStore(storeName);
 }
 
-function getData(storeName, key){
+function getData(storeName, key, callback){
   // var store = getObjectStore(storeName, 'readwrite');
   var transaction = db.transaction(storeName, "readwrite");
   var store = transaction.objectStore(storeName);
@@ -47,12 +49,13 @@ function getData(storeName, key){
   request.onsuccess = function(event){
     var value = event.target.result;
     $('#output_area').html(value);
-    return value;
+    // return value;
+    callback(value);
   }
 }
 
 // 全データを読み出す
-function getAllData(storeName){
+function getAllData(storeName, callback){
   var dataArray = [];
   var transaction = db.transaction(storeName, 'readwrite');
   var store = transaction.objectStore(storeName);
@@ -64,19 +67,21 @@ function getAllData(storeName){
       cursor.continue();
     }else{
       alert('allDataGetDone');
-      $('#output_area').html(dataArray[0].value);
-      return dataArray;
+      // $('#output_area').html(dataArray[0].value);
+      callback(dataArray);
+      // return dataArray;
     }
   }
 }
 
 // function addData(store, dictionary)
 
-function putData(storeName, dictionary){
+function putData(storeName, dictionary, callback){
   var store = getObjectStore(storeName, 'readwrite');
   var request = store.put(dictionary);
   request.onsuccess = function(){
     console.log('putOK!!');
+    callback();
   }
 }
 

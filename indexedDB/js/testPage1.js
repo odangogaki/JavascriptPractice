@@ -23,18 +23,35 @@ $(document).ready(function(){
   //getAllDataメソッドがなぜか2回はしり、1回目にはopenCursor()がsuccessにならず、2回目にsucccessになるため
   // 時間遅延でoutputしようとしたがreturnでの値が返ってこない
   // なぜ？？20180709
+  // 仮説
+  // getAllDataメソッド実行時、store.openCursor().onsuccessまで処理が走るが
+  // onsuccessは成功時に以下のcallback関数を実行するのでいったんスルーされ
+  // 先にoutputDataへのgetAllDataメソッドの実行結果が格納される？
+  // なので、getAllDataメソッドが2回行われたように見え、returnされるのは$().htmlが
+  // 終わった後なのでなにも取得できない
   $('#output_button').on({
     'click' : function(){
-
+      openDB("testDB", 1, "testStore", function(){
+        getAllData("testStore", function(dataArray){
+          $('#output_area').html(dataArray[0].value);
+          console.log(dataArray);
+        });
+      });
       // var data = getData("testStore", "testPage1.html0");
       // $('#output_area').html(data);
 
       // var storeObject = getObjectStore("testStore", 'readwrite');
-      var outputData = getAllData("testStore");
-      setTimeout(function(){
-        console.log(outputData);
-        $('#output_area').html(outputData);
-      }, 1000);
+      // var outputData = getAllData("testStore");
+      // setTimeout(function(){
+      //   console.log(outputData);
+      //   $('#output_area').html(outputData);
+      // }, 1000);
+
+      // callback関数を持たせることでうまく処理ができたodagaki 20180710
+      // getAllData("testStore", function(dataArray){
+      //   $('#output_area').html(dataArray[0].value);
+      //   console.log(dataArray);
+      // });
     }
   })
 
