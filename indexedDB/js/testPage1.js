@@ -25,9 +25,14 @@ $(document).ready(function(){
   // なぜ？？20180709
   $('#output_button').on({
     'click' : function(){
+
+      // var data = getData("testStore", "testPage1.html0");
+      // $('#output_area').html(data);
+
       // var storeObject = getObjectStore("testStore", 'readwrite');
       var outputData = getAllData("testStore");
       setTimeout(function(){
+        console.log(outputData);
         $('#output_area').html(outputData);
       }, 1000);
     }

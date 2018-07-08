@@ -39,11 +39,14 @@ function getObjectStore(storeName, mode){
   return transaction.objectStore(storeName);
 }
 
-function getData(store, key){
+function getData(storeName, key){
   // var store = getObjectStore(storeName, 'readwrite');
+  var transaction = db.transaction(storeName, "readwrite");
+  var store = transaction.objectStore(storeName);
   var request = store.get(key);
   request.onsuccess = function(event){
     var value = event.target.result;
+    $('#output_area').html(value);
     return value;
   }
 }
@@ -61,7 +64,7 @@ function getAllData(storeName){
       cursor.continue();
     }else{
       alert('allDataGetDone');
-      console.log(dataArray);
+      $('#output_area').html(dataArray[0].value);
       return dataArray;
     }
   }
