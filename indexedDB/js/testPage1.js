@@ -5,24 +5,29 @@ $(document).ready(function(){
       openDB(DBName, 1, storeName, function(){
         console.log(getFileName());
         if(getFileName() == 'testPage1.html'){
+          // コールバック関数を読みだした回数をカウントする変数
+          var countCallback = 0;
           for(var question_i = 1; question_i < 7; question_i++){
             var key = getFileName() + $('#question' + question_i).attr('id');
             var value = $('#question' + question_i + ' .answerField').html();
             var dictionary = {id: key, value: value};
             putData(storeName, dictionary, function(){
-              if(question_i >= 6){
+              countCallback += 1;
+              if(countCallback >= 6){
                 location.href = './testPage2.html';
               }
             });
           }
         }else{
-        // ループ処理について考えないとif(question_i >= 6)がめっちゃはしる
+          // コールバック関数を読みだした回数をカウントする変数
+          var countCallback = 0;
           for(var question_i = 1; question_i < 7; question_i++){
             var key = getFileName() + $('#question' + (question_i + 6)).attr('id');
             var value = $('#question' + (question_i + 6) + ' .answerField').html();
             var dictionary = {id: key, value: value};
             putData(storeName, dictionary, function(){
-              if(question_i >= 6){
+              countCallback += 1;
+              if(countCallback >= 6){
                 getAllData(storeName, function(dataArray){
                   console.log(dataArray);
                 });
@@ -32,7 +37,27 @@ $(document).ready(function(){
         }
       });
     }
-  })
+  });
+
+  $('#prev_page').on({
+    'click' : function(){
+      openDB(DBName, 1, storeName, function(){
+        // コールバック関数を読みだした回数をカウントする変数
+        var countCallback = 0;
+        for(var question_i = 1; question_i < 13; question_i++){
+          var key = getFileName() + $('#question' + question_i).attr('id');
+          var value = $('#question' + question_i + ' .answerField').html();
+          var dictionary = {id: key, value: value};
+          deleteAllData(storeName, function(){
+            countCallback += 1;
+            if(countCallback >= 12){
+              location.href = './testPage1.html';
+            }
+          });
+        }
+      });
+    }
+  });
 
 
 

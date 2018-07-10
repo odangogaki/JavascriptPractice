@@ -36,11 +36,13 @@ function openDB(DBName, DBVersion, DBStoreName, callback){
   };
 }
 
+// オブジェクトストアを返すメソッド
 function getObjectStore(storeName, mode){
   var transaction = db.transaction(storeName, mode);
   return transaction.objectStore(storeName);
 }
 
+// 指定したkeyのデータを取得するメソッド
 function getData(storeName, key, callback){
   // var store = getObjectStore(storeName, 'readwrite');
   var transaction = db.transaction(storeName, "readwrite");
@@ -74,8 +76,40 @@ function getAllData(storeName, callback){
   }
 }
 
-// function addData(store, dictionary)
+// データを削除するメソッド
+function deleteData(storeName, key, callback){
+  var transaction = db.transaction(storeName, 'readwrite');
+  var store = transaction.objectStore(storeName);
+  var request = store.delete(key);
+  request.onsuccess = function(event){
+    callback();
+  }
+}
 
+// データを削除するメソッド
+function deleteAllData(storeName, callback){
+  var dataArray = [];
+  var transaction = db.transaction(storeName, 'readwrite');
+  var store = transaction.objectStore(storeName);
+  store.openCursor().onsuccess = function(event){
+    var cursor = event.target.result;
+    if(cursor){
+      if(cursor.key.match(/testPage/)){
+        store.delete(cursor.key);
+        cursor.continue();
+      }else{
+        console.log('delete Failed');
+      }
+    }else{
+      alert('deleteDone');
+      // $('#output_area').html(dataArray[0].value);
+      callback();
+      // return dataArray;
+    }
+  }
+}
+
+// データを追加するメソッド（上書き）
 function putData(storeName, dictionary, callback){
   var store = getObjectStore(storeName, 'readwrite');
   var request = store.put(dictionary);
